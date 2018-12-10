@@ -1,29 +1,29 @@
 var mong = require('mongoose');
 
-var Books = mong.model('Books',{
+var Books = mong.model('Dwijesh',{
     title : {
         type:String,
-        required: true,
+        //required: true,
         minLength: 3,
         trim: true
     },
     author: {
         type:String,
-        required: true,
+        //required: true,
         minLength: 3,
         trim: true
     },
     price: {
         type: Number,
-        required: true,
+        //required: true,
     },
     rating : {
         type: Number,
-        required: true,
+      //  required: true,
     },
     sold : {
         type:Boolean,
-        required: true,
+        //required: true,
     }
 
 })
