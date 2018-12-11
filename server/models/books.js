@@ -1,6 +1,6 @@
 var mong = require('mongoose');
 
-var Books = mong.model('Dwijesh',{
+var Books = mong.model('Books',{
     title : {
         type:String,
         //required: true,
