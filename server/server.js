@@ -63,6 +63,17 @@ app.post('/books',(req,res)=>{
     });
 });
 
+app.get('/books/:id',(req,res)=>{
+    console.log("hello world");
+    var id = req.params.id;
+    console.log(id);
+    Books.find({"_id":ObjectID(id)}).then((bklist)=>{
+        console.log(bklist);
+        res.send(bklist);
+    },(err)=>{
+        res.status(400).send(err);
+    });
+});
 
 if(!module.parent) {
     app.listen(3000,()=>{
