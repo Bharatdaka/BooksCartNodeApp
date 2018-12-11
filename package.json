@@ -1,0 +1,29 @@
+{
+  "name": "bookscartnodeapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.3.15"
+  },
+  "devDependencies": {
+    "validator": "^10.9.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bharatdaka/BooksCartNodeApp.git"
+  },
+  "author": "Bharat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bharatdaka/BooksCartNodeApp/issues"
+  },
+  "homepage": "https://github.com/Bharatdaka/BooksCartNodeApp#readme"
+}

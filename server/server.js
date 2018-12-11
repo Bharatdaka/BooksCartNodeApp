@@ -6,9 +6,11 @@ const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 const _ = require('lodash');
 
+
 var { mong } = require('./DBdata/mongoose');
 
 var { Books } = require('./models/books');
+var {User} = require('./models/user');
 
 var app = express();
 app.use(bodyParser.json());
@@ -73,6 +75,20 @@ app.get('/books/:id',(req,res)=>{
     },(err)=>{
         res.status(400).send(err);
     });
+});
+
+
+app.post('/signup',(req,res)=>{
+    var body = _.pick(req.body,['email','password','username']);
+    var us = new User(body);
+    console.log(body);
+    res.send(body);
+
+    // us.save().then((doc)=>{
+    //     res.send(doc);
+    //  }).catch((err)=>{
+    //      res.status(404).send(err);
+    // })
 });
 
 if(!module.parent) {
