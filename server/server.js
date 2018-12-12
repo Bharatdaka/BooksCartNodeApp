@@ -80,16 +80,29 @@ app.get('/books/:id',(req,res)=>{
 
 app.post('/signup',(req,res)=>{
     var body = _.pick(req.body,['email','password','username']);
-    var us = new User(body);
+    var user = new User(body);
     console.log(body);
-    res.send(body);
 
-    // us.save().then((doc)=>{
-    //     res.send(doc);
-    //  }).catch((err)=>{
-    //      res.status(404).send(err);
-    // })
+    user.save().then((doc)=>{
+        res.send(doc);
+     },(err)=>{
+         res.status(404).send(err);
+    });
 });
+
+
+app.post('/signin',(req,res)=>{
+    var body = _.pick(req.body,['email','password']);
+    var user = new User(body);
+    console.log(body);
+
+    // user.save().then((doc)=>{
+    //     res.send(doc);
+    //  },(err)=>{
+    //      res.status(404).send(err);
+    // });
+});
+
 
 if(!module.parent) {
     app.listen(3000,()=>{
