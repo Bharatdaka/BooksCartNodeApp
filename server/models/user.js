@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 const validator = require('validator');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
+
 
 
 var UserSchema = new mongoose.Schema({
@@ -31,19 +32,17 @@ var UserSchema = new mongoose.Schema({
         required: true,
         minlength: 5,
         //unique: true
-    }
-
-
-    // tokens:[{
-    //     access:{
-    //         type: String,
-    //         required: true,    
-    //     },
-    //     token:{
-    //         type: String,
-    //         required: true,    
-    //     }
-    // }]
+    },
+    tokens:[{
+        access:{
+            type: String,
+            required: true,    
+        },
+        token:{
+            type: String,
+            required: true,    
+        }
+    }]
 });
 
 
@@ -92,6 +91,26 @@ UserSchema.methods.toJSON = function (){
     
     return _.pick(userObj,['_id','email']);
 };
+
+
+UserSchema.methods.generateToken = function(){
+    var user = this;
+    var access = 'auth';
+    var token = jwt.sign({username:user.username, access}, 'secret').toString();
+    user.tokens = user.tokens.concat([{access, token}]);
+
+    return user.save().then(() => {
+        return token;
+    });
+}
+
+// UserSchema.statics.hashPassword = function hashPassword(password) {
+//     return bcrypt.hashSync(password,10);
+// }
+
+UserSchema.methods.isValid = function(hashedPassword) {
+    return bcrypt.compareSync(hashedpassword, this.password);
+}
 
 var User = mongoose.model('User',UserSchema);
 

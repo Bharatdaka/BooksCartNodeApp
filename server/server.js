@@ -2,15 +2,16 @@ require('./config/config');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
-const {ObjectID} = require('mongodb');
 const _ = require('lodash');
+const jwt = require('jsonwebtoken');
 
-
+const { ObjectID } = require('mongodb');
 var { mong } = require('./DBdata/mongoose');
 
 var { Books } = require('./models/books');
-var {User} = require('./models/user');
+var { User } = require('./models/user');
+
+
 
 var app = express();
 app.use(bodyParser.json());
@@ -38,17 +39,74 @@ app.use(function (req, res, next) {
 });
 
 
+// user sign up api
+app.post('/signup',(req,res)=>{
+    var body = _.pick(req.body,['email','password','username']);
+    var user = new User(body);
+    console.log(body);
 
-app.get('/books',(req,res)=>{
+    let promise = User.findOne({email:req.body.email}).exec();
+    promise.then(function(doc){
+        if(doc){
+            return res.status(501).json({message : ' Email Id exits'});
+        }
+        else{
+            user.save().then((doc)=>{
+                res.send(doc);
+             },(err)=>{
+                 res.status(404).send(err);
+            });
+        }
+    });
+    
+});
+
+//user sign in api
+app.post('/signin',(req,res)=>{
+    var body = _.pick(req.body,['email','password']);
+    // var user = new User(body);
+    console.log(body);
+
+    // User.findByCredentials(body.email, body.password)
+    //     .then((result) => {
+    //         return user.generateToken().then((ret => {
+                
+    //         }));
+    //     });
+
+    let promise = User.findOne({email:req.body.email}).exec();
+    promise.then(function(doc){
+        if(doc){
+            // if(doc.isValid(req.body.password)) {
+            User.findByCredentials(body.email, body.password).then((doc) => {
+            // generate token
+                let token = jwt.sign({username:req.body.username}, 'secret', {expiresIn: '1h'});
+                // promise.save();
+                //doc.save();
+                return res.status(200).json(token);
+                }, (err) => {
+                    return res.status(501).json({message : ' Invalid Credentials'});
+            });
+        }
+        else{
+            return res.status(501).json({message : ' Invalid Email Id'});
+        }
+    });
+
+});
+
+
+
+app.get('/books', verifyToken, (req,res)=>{
     Books.find().then((bklist)=>{
-        console.log(bklist);
+        // console.log(bklist);
         res.send(bklist);
     },(err)=>{
         res.status(400).send(err);
     });
 });
 
-app.post('/books',(req,res)=>{
+app.post('/books', verifyToken, (req,res)=>{
      var body = _.pick(req.body,['title', 'author', 'price', 'rating', 'sold'])
      var bk = new Books(body);
     // console.log(bk.title);
@@ -58,7 +116,7 @@ app.post('/books',(req,res)=>{
     // });
 
     bk.save().then((doc) => {
-        console.log(doc);
+        // console.log(doc);
         res.send(doc);
     },(err)=>{
         res.status(400).send(err);
@@ -78,31 +136,11 @@ app.get('/books/:id',(req,res)=>{
 });
 
 
-app.post('/signup',(req,res)=>{
-    var body = _.pick(req.body,['email','password','username']);
-    var user = new User(body);
-    console.log(body);
-
-    user.save().then((doc)=>{
-        res.send(doc);
-     },(err)=>{
-         res.status(404).send(err);
-    });
-});
-
-
-app.post('/signin',(req,res)=>{
-    var body = _.pick(req.body,['email','password']);
-    var user = new User(body);
-    console.log(body);
-
-    // user.save().then((doc)=>{
-    //     res.send(doc);
-    //  },(err)=>{
-    //      res.status(404).send(err);
-    // });
-});
-
+function verifyToken(req, res, next) {
+    console.log("bharat");
+    console.log(req.headers);
+    next();
+}
 
 if(!module.parent) {
     app.listen(3000,()=>{
